@@ -16,8 +16,14 @@ const val CHANNEL_NAME = "CHANNEL_1"
 const val CHANNEL_ID = "channelId"
 
 
-fun NotificationManager.sendCompleteDownloadNotification(context: Context) {
+fun NotificationManager.sendCompleteDownloadNotification(
+    context: Context,
+    idText: Int,
+    idStatus: Int
+) {
     val intent = Intent(context, DetailActivity::class.java)
+    intent.putExtra("Text", context.getString(idText))
+    intent.putExtra("Status", context.getString(idStatus))
     val pendingIntent = PendingIntent.getActivity(
         context, REQUEST_CODE, intent,
         PendingIntent.FLAG_ONE_SHOT

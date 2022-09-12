@@ -3,20 +3,20 @@ package com.example.loadApp
 import android.app.DownloadManager
 import android.app.NotificationManager
 import android.content.*
-import android.location.GnssAntennaInfo
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+
 
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
 
     private var url: URLS? = null
+    private var textId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,36 +24,62 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbarMain))
 
         findViewById<RadioGroup>(R.id.radioGroup).setOnCheckedChangeListener { _, checkedId ->
-            url = when (checkedId) {
-                R.id.rd_Glide -> URLS.Glide
-                R.id.rd_LoadApp -> URLS.LoadApp
-                R.id.rd_Retrofit -> URLS.Retrofit
-                else -> null
+            when (checkedId) {
+                R.id.rd_Glide -> {
+                    url = URLS.Glide
+                    textId = R.string.Glide
+                }
+                R.id.rd_LoadApp -> {
+                    url = URLS.LoadApp
+                    textId = R.string.LoadApp
+                }
+                R.id.rd_Retrofit -> {
+                    url = URLS.Retrofit
+                    textId = R.string.Retrofit
+                }
             }
         }
 
         createChannel(this, CHANNEL_ID, CHANNEL_NAME)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+
+
         findViewById<LoadingButton>(R.id.custom_button).setOnClickListener { download() }
     }
 
     //when Download Finish
-    private fun sendNotification() {
+    private fun sendNotification(statusId: Int) {
         val notificationManager = ContextCompat.getSystemService(
             this, NotificationManager::class.java
         ) as NotificationManager
-        notificationManager.sendCompleteDownloadNotification(this)
+        notificationManager.sendCompleteDownloadNotification(this, textId, statusId)
     }
 
 
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        override fun onReceive(context: Context, intent: Intent) {
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
-            if (id == downloadID) sendNotification()
+            if (id == downloadID) {
+
+                val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+
+                val downloads = downloadManager.query(DownloadManager.Query().setFilterById(id))
+
+                if (downloads.moveToFirst()) {
+                    val index = downloads.getColumnIndex(DownloadManager.COLUMN_STATUS)
+
+                    when (downloads.getInt(index)) {
+                        DownloadManager.STATUS_SUCCESSFUL -> sendNotification(R.string.Success)
+                        DownloadManager.STATUS_FAILED -> sendNotification(R.string.Failed)
+                        else ->{}
+                    }
+                }
+            }
         }
     }
+
 
     private fun download() {
         if (url != null) {
@@ -64,18 +90,17 @@ class MainActivity : AppCompatActivity() {
                     .setRequiresCharging(false)
                     .setAllowedOverMetered(true)
                     .setAllowedOverRoaming(true)
-
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-            downloadID =
-                downloadManager.enqueue(request)
-        } else Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
 
+            downloadID = downloadManager.enqueue(request)
+        } else Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {
         super.onPause()
         finish()
     }
+
 }
 
 

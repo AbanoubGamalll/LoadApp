@@ -2,6 +2,7 @@ package com.example.loadApp
 
 import android.app.NotificationManager
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -14,14 +15,20 @@ class DetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail)
         setSupportActionBar(findViewById(R.id.toolbarDetail))
 
-
-        val txt_fileName = findViewById<TextView>(R.id.txt_fileName)
-        txt_fileName.text = "Gilde"
-        val txt_status = findViewById<TextView>(R.id.txt_status)
-        txt_status.text = "Sucess"
+        setData()
 
         cancelNotification()
 
+    }
+
+    private fun setData() {
+        val fileName = findViewById<TextView>(R.id.txt_fileName)
+        fileName.text = intent.getStringExtra("Text")
+
+        val status = findViewById<TextView>(R.id.txt_status)
+        val text = intent.getStringExtra("Status")
+        status.text = text
+        status.setTextColor(if (text == getString(R.string.Success)) getColor(R.color.green) else Color.RED)
     }
 
     private fun cancelNotification() {
