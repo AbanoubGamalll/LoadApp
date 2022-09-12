@@ -2,13 +2,13 @@ package com.example.loadApp
 
 import android.app.DownloadManager
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.location.GnssAntennaInfo
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 
@@ -16,12 +16,21 @@ class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
 
-    private lateinit var url: URLS
+    private var url: URLS? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbarMain))
+
+        findViewById<RadioGroup>(R.id.radioGroup).setOnCheckedChangeListener { _, checkedId ->
+            url = when (checkedId) {
+                R.id.rd_Glide -> URLS.Glide
+                R.id.rd_LoadApp -> URLS.LoadApp
+                R.id.rd_Retrofit -> URLS.Retrofit
+                else -> null
+            }
+        }
 
         createChannel(this, CHANNEL_ID, CHANNEL_NAME)
 
@@ -47,20 +56,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun download() {
-        val request =
-            DownloadManager.Request(Uri.parse(url.value))
-                .setTitle(getString(R.string.app_name))
-                .setDescription(getString(R.string.app_description))
-                .setRequiresCharging(false)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
+        if (url != null) {
+            val request =
+                DownloadManager.Request(Uri.parse(url!!.value))
+                    .setTitle(getString(R.string.app_name))
+                    .setDescription(getString(R.string.app_description))
+                    .setRequiresCharging(false)
+                    .setAllowedOverMetered(true)
+                    .setAllowedOverRoaming(true)
 
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        downloadID =
-            downloadManager.enqueue(request)
+            val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            downloadID =
+                downloadManager.enqueue(request)
+        } else Toast.makeText(this, "Please select the file to download", Toast.LENGTH_SHORT).show()
+
     }
 
+    override fun onPause() {
+        super.onPause()
+        finish()
+    }
 }
+
 
 private enum class URLS(val value: String) {
     Glide("https://github.com/bumptech/glide"),
