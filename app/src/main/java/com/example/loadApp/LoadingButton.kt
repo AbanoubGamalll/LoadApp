@@ -12,11 +12,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-    private var widthSize = 0
-    private var heightSize = 0
 
-
-    private val valueAnimator = ValueAnimator()
 
     private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
     }
@@ -30,73 +26,85 @@ class LoadingButton @JvmOverloads constructor(
     private val paintCircle = Paint().apply { color = Color.YELLOW }
     private val paintRec = Paint().apply { color = Color.BLUE }
 
-    private val PERCENTAGE_VALUE_HOLDER = "percentage"
+    private val Circle_PERCENTAGE_VALUE_HOLDER = "CirclePercentage"
+    private val Rec_PERCENTAGE_VALUE_HOLDER = "RecPercentage"
+
     private var circleState = 0f
+    private var recState = 0f
     private var text = "Download"
     private var clicked = false
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(context.getColor(R.color.green))
+
         if (circleState == 360f) {
             clicked = false
             text = "Download"
+            isClickable = true
         }
-        var xTC = ((width / 2) - ((paintText.descent() + paintText.ascent())) / 2)
-        var yTC = ((height / 2) - ((paintText.descent() + paintText.ascent())) / 2)
-        canvas.drawText(text, xTC, yTC, paintText)
 
         if (clicked) {
-            xTC += 65 * 4
-            yTC = (height / 2).toFloat()
-
+            canvas.drawRect(
+                0f,
+                0f,
+                recState,//////
+                height.toFloat(),
+                paintRec
+            )
+            val xTC = ((width / 2) - ((paintText.descent() + paintText.ascent())) / 2) + 65 * 4
+            val yTC = (height / 2).toFloat()
             canvas.drawArc(
                 xTC + 10 - 30, yTC - 30,
                 xTC + 40, yTC + 30,
                 0F, circleState,
                 true, paintCircle
             )
-            //canvas.drawRect()
         }
+
+        canvas.drawText(
+            text,
+            ((width / 2) - ((paintText.descent() + paintText.ascent())) / 2),
+            ((height / 2) - ((paintText.descent() + paintText.ascent())) / 2),
+            paintText
+        )
     }
 
 
     private fun animateProgress() {
+
+        isClickable = false
         clicked = true
         text = "We are loading"
-        val valuesHolder = PropertyValuesHolder.ofFloat(
-            PERCENTAGE_VALUE_HOLDER,
+
+        val circleValue = PropertyValuesHolder.ofFloat(
+            Circle_PERCENTAGE_VALUE_HOLDER,
             0f,
             360f
         )
+        val recValue = PropertyValuesHolder.ofFloat(
+            Rec_PERCENTAGE_VALUE_HOLDER,
+            0f,
+            width.toFloat()
+        )
 
         val animator = ValueAnimator().apply {
-            setValues(valuesHolder)
+            setValues(circleValue, recValue)
+
             duration = 1000
             interpolator = AccelerateDecelerateInterpolator()
 
             addUpdateListener {
-                circleState = it.getAnimatedValue(PERCENTAGE_VALUE_HOLDER) as Float
-                //buton state
+                circleState = it.getAnimatedValue(Circle_PERCENTAGE_VALUE_HOLDER) as Float
+                recState = it.getAnimatedValue(Rec_PERCENTAGE_VALUE_HOLDER) as Float
 
                 invalidate()
             }
         }
+
         animator.start()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minW: Int = paddingLeft + paddingRight + suggestedMinimumWidth
-        val w: Int = resolveSizeAndState(minW, widthMeasureSpec, 1)
-        val h: Int = resolveSizeAndState(
-            MeasureSpec.getSize(w),
-            heightMeasureSpec,
-            0
-        )
-        widthSize = w
-        heightSize = h
-        setMeasuredDimension(w, h)
-    }
 
     override fun performClick(): Boolean {
         animateProgress()
