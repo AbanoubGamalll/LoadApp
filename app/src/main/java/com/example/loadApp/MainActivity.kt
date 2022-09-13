@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<LoadingButton>(R.id.custom_button).setOnClickListener { download() }
     }
 
-    //when Download Finish
+
     private fun sendNotification(statusId: Int) {
         val notificationManager = ContextCompat.getSystemService(
             this, NotificationManager::class.java
@@ -73,8 +74,9 @@ class MainActivity : AppCompatActivity() {
                     when (downloads.getInt(index)) {
                         DownloadManager.STATUS_SUCCESSFUL -> sendNotification(R.string.Success)
                         DownloadManager.STATUS_FAILED -> sendNotification(R.string.Failed)
-                        else ->{}
                     }
+                } else {
+                    sendNotification(R.string.Failed)
                 }
             }
         }
