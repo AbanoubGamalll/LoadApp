@@ -46,7 +46,10 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
 
-        findViewById<LoadingButton>(R.id.custom_button).setOnClickListener { download() }
+        findViewById<LoadingButton>(R.id.custom_button).setOnClickListener {
+            ButtonState.Clicked
+            download()
+        }
     }
 
 
@@ -78,12 +81,14 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     sendNotification(R.string.Failed)
                 }
+                ButtonState.Completed
             }
         }
     }
 
 
     private fun download() {
+        ButtonState.Loading
         if (url != null) {
             val request =
                 DownloadManager.Request(Uri.parse(url!!.value))
