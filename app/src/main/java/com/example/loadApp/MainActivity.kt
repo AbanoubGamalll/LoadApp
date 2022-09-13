@@ -1,14 +1,21 @@
 package com.example.loadApp
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.app.NotificationManager
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
 
 
@@ -19,10 +26,23 @@ class MainActivity : AppCompatActivity() {
     private var url: URLS? = null
     private var textId: Int = 0
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbarMain))
+
+        val motion = findViewById<MotionLayout>(R.id.Motion_layout)
+
+    //ANIMATE ACTIVITY
+        ValueAnimator().apply {
+            setValues(PropertyValuesHolder.ofFloat("MotionValue", 0f, 1f))
+            duration = 1500
+            interpolator = AccelerateInterpolator()
+            addUpdateListener {
+                motion.progress = it.getAnimatedValue("MotionValue") as Float
+            }
+        }.start()
 
         findViewById<RadioGroup>(R.id.radioGroup).setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
