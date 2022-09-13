@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -35,6 +36,12 @@ fun NotificationManager.sendCompleteDownloadNotification(
         pendingIntent
     )
 
+    val img = BitmapFactory.decodeResource(context.resources, R.drawable.downloadimg)
+
+    val bigPic = NotificationCompat.BigPictureStyle()
+        .bigPicture(img)
+        .bigLargeIcon(null)
+
     val notificationBuilder =
         NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_assistant_black_24dp)
@@ -42,6 +49,10 @@ fun NotificationManager.sendCompleteDownloadNotification(
             .setContentText(context.getString(R.string.notification_description))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(action)
+            .setStyle(bigPic)
+            .setLargeIcon(img)
+
+
 
 
     notify(NOTIFICATION_ID, notificationBuilder.build())
