@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LoadingButton">
-
+        <attr name="backGround" format="color" />
+        <attr name="textNotClicked" format="string"/>
+        <attr name="textClicked" format="string"/>
+        <attr name="TextColor" format="color"/>
     </declare-styleable>
 </resources>

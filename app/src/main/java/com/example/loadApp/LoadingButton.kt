@@ -2,6 +2,7 @@ package com.example.loadApp
 
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -16,9 +17,11 @@ class LoadingButton @JvmOverloads constructor(
 
     private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
     }
+    private val deftheme =
+        context.theme.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0)
 
     private val paintText = Paint().apply {
-        color = Color.WHITE
+        color = deftheme.getColor(R.styleable.LoadingButton_TextColor, 0)
         textSize = 60.0f
         textAlign = Paint.Align.CENTER
     }
@@ -31,16 +34,23 @@ class LoadingButton @JvmOverloads constructor(
 
     private var circleState = 0f
     private var recState = 0f
-    private var text = "Download"
     private var clicked = false
+
+
+    private val background = deftheme.getColor(R.styleable.LoadingButton_backGround, 0)
+    private val textClicked = deftheme.getString(R.styleable.LoadingButton_textClicked)
+    private val textNotClicked = deftheme.getString(R.styleable.LoadingButton_textNotClicked)
+
+    private var text = textNotClicked
+
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawColor(context.getColor(R.color.green))
+        canvas.drawColor(background)
 
         if (circleState == 360f) {
             clicked = false
-            text = "Download"
+            text = textNotClicked
             isClickable = true
         }
 
@@ -63,7 +73,7 @@ class LoadingButton @JvmOverloads constructor(
         }
 
         canvas.drawText(
-            text,
+            text!!,
             ((width / 2) - ((paintText.descent() + paintText.ascent())) / 2),
             ((height / 2) - ((paintText.descent() + paintText.ascent())) / 2),
             paintText
@@ -75,7 +85,7 @@ class LoadingButton @JvmOverloads constructor(
 
         isClickable = false
         clicked = true
-        text = "We are loading"
+        text = textClicked
 
         val circleValue = PropertyValuesHolder.ofFloat(
             Circle_PERCENTAGE_VALUE_HOLDER,

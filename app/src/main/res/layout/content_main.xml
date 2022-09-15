@@ -67,6 +67,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:backGround="@color/green"
+        app:textClicked="We are loading"
+        app:textNotClicked="Download"
+        app:TextColor="@color/white"
         />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
