@@ -1,17 +1,16 @@
 package com.example.loadApp
 
-import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.app.NotificationManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.view.animation.AccelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

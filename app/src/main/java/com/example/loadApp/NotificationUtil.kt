@@ -1,5 +1,6 @@
 package com.example.loadApp
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,8 +27,7 @@ fun NotificationManager.sendCompleteDownloadNotification(
     intent.putExtra("Text", context.getString(idText))
     intent.putExtra("Status", context.getString(idStatus))
     val pendingIntent = PendingIntent.getActivity(
-        context, REQUEST_CODE, intent,
-        PendingIntent.FLAG_ONE_SHOT
+        context, REQUEST_CODE, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
     )
 
     val action = NotificationCompat.Action(

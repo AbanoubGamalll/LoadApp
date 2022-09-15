@@ -2,12 +2,12 @@ package com.example.loadApp
 
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import kotlin.properties.Delegates
 import android.view.animation.AccelerateDecelerateInterpolator
 
 class LoadingButton @JvmOverloads constructor(
@@ -15,8 +15,8 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
 
-    private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
-    }
+//    private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new -> }
+
     private val deftheme =
         context.theme.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0)
 
